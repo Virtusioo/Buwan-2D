@@ -9,6 +9,12 @@
 
   <ItemGroup>
     <PackageReference Include="LuaCSharp" Version="0.5.5" />
+    <PackageReference Include="SDL3-CS" Version="3.4.12.2" />
+    <PackageReference Include="SDL3-CS.Windows" Version="3.4.12.1" />
+    <PackageReference Include="SDL3-CS.Windows.Image" Version="3.4.4.7" />
+    <PackageReference Include="SDL3-CS.Windows.Mixer" Version="3.2.4.7" />
+    <PackageReference Include="SDL3-CS.Windows.Shadercross" Version="3.0.0.7" />
+    <PackageReference Include="SDL3-CS.Windows.TTF" Version="3.2.2.7" />
   </ItemGroup>
 
 </Project>
