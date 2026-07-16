@@ -1,14 +1,14 @@
 
 local x, y = 0, 0
+local Speed = 5
 
 function App.OnUpdate(deltaTime)
-	x = x + 1 
-	y = y + 1
+	x = x + Speed
+	y = y + Speed
 end
 
 function App.OnDraw()
 	Graphics.ClearScreen()
-	Graphics.SetAlpha(1)
-	Graphics.SetColor(1, 1, 1) -- Color white
+	Graphics.SetColor(1, 1, 1, 1) -- Color white
 	Graphics.FillRectangle(x, y, 100, 100)
 end
