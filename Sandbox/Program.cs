@@ -34,9 +34,9 @@ class SDL3Test
 
     private async Task<AppConfigInfo> GetBuwanAppConfigAsync()
     {
-        await Lua.DoFileAsync("Samples/Main.lua");
+        await Lua.DoFileAsync("Samples/Config.lua");
 
-        var appConfigFunc = Buwan["GetAppConfig"].Read<LuaFunction>();
+        var appConfigFunc = Buwan["GetConfig"].Read<LuaFunction>();
 
         await Lua.RunAsync(appConfigFunc);
 
