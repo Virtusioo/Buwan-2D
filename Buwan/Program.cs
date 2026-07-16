@@ -6,8 +6,7 @@ using Buwan.Runtime;
 
 internal class Program
 {
-    public static Application App = new();
-    private static string[] _args;
+    private static string[]? _args;
 
     public static void ShowUsage()
     {
@@ -22,7 +21,7 @@ internal class Program
 
     public static string GetArgument(int index, string what)
     {
-        if (index >= _args.Length)
+        if (index >= _args!.Length)
         {
             throw new Exception($"Expected {what}");
         }
@@ -33,6 +32,8 @@ internal class Program
     public static void HandleProjectCommand(string projectName)
     {
         Directory.CreateDirectory(projectName);
+
+        Console.WriteLine($"Created project named '{projectName}'");
     }
 
     public static void HandleCommands()
