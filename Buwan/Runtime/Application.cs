@@ -66,10 +66,13 @@ namespace Buwan.Runtime
             appModule.TryGetValue("OnUpdate", out var onUpdateFunc);
             appModule.TryGetValue("OnDraw", out var onDrawFunc);
 
+            // Optional callbacks
+            onReadyFunc.TryRead<LuaFunction>(out var onReadyCallback);
+
             return new()
             {
                 GetConfig = getConfigFunc.Read<LuaFunction>(),
-                OnReady = onReadyFunc.Read<LuaFunction>(),
+                OnReady = onReadyCallback,
                 OnUpdate = onUpdateFunc.Read<LuaFunction>(),
                 OnDraw = onDrawFunc.Read<LuaFunction>()
             };
