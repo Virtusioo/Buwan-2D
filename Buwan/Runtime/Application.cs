@@ -106,18 +106,8 @@ namespace Buwan.Runtime
             bool hasWidthConfig = configTable.TryGetValue("ScreenWidth", out var screenWidthValue);
             bool hasHeightConfig = configTable.TryGetValue("ScreenHeight", out var screenHeightValue);
 
-            int windowWidth = 800;
-            int windowHeight = 600;
-
-            if (hasWidthConfig)
-            {
-                windowWidth = screenWidthValue.Read<int>();
-            }
-
-            if (hasHeightConfig)
-            {
-                windowHeight = screenHeightValue.Read<int>();
-            }
+            int windowWidth = hasWidthConfig ? screenWidthValue.Read<int>() : 800;
+            int windowHeight = hasHeightConfig ? screenHeightValue.Read<int>() : 600;
 
             // Create the window
             Window = SDL.CreateWindow(appName, 
