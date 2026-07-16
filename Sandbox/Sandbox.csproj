@@ -17,4 +17,11 @@
     <PackageReference Include="SDL3-CS.Windows.TTF" Version="3.2.2.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Samples\" />
+	<Content Include="Samples\**\*">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
+  </ItemGroup>
+
 </Project>
