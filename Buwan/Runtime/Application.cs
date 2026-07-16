@@ -56,6 +56,7 @@ namespace Buwan.Runtime
             // Open all modules
             LuaLibraryBuilder builder = new();
             builder.PutModule("Graphics", new GraphicsModule(Renderer));
+            builder.PutModule("Colors", new ColorsModule());
 
             // Build all modules to current lua environment
             builder.BuildToTable(Lua.Environment);
