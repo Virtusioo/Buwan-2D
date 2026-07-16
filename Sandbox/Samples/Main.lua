@@ -1,16 +1,13 @@
 
-function Buwan.OnReady()
-	X = 0
-	Y = 0
+local x, y = 0, 0
+
+function App.OnUpdate(deltaTime)
+	x = x + 1 
+	y = y + 1
 end
 
-function Buwan.OnUpdate(deltaTime)
-	X = X + 1 
-	Y = Y + 1
-end
-
-function Buwan.OnDraw()
+function App.OnDraw()
 	Graphics.ClearScreen()
 	Graphics.SetColor(1, 1, 1) -- Color white
-	Graphics.FillRectangle(X, Y, 100, 100)
+	Graphics.FillRectangle(x, y, 100, 100)
 end

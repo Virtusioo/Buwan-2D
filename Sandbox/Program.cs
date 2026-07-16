@@ -16,7 +16,7 @@ class SDL3Test
     public nint Window { get; private set; }
     public nint Renderer { get; private set; }
     public LuaState Lua;
-    private readonly LuaTable Buwan = new();
+    private readonly LuaTable App = new();
 
     public SDL3Test()
     {
@@ -36,7 +36,7 @@ class SDL3Test
     {
         await Lua.DoFileAsync("Samples/Config.lua");
 
-        var appConfigFunc = Buwan["GetConfig"].Read<LuaFunction>();
+        var appConfigFunc = App["GetConfig"].Read<LuaFunction>();
 
         await Lua.RunAsync(appConfigFunc);
 
@@ -94,7 +94,7 @@ class SDL3Test
 
     public async Task InitializeAsync()
     {
-        Lua.Environment["Buwan"] = Buwan; // Create the buwan module
+        Lua.Environment["App"] = App; // Create the app module
 
         await Lua.DoFileAsync("Samples/Main.lua"); // Run Main.lua
 
@@ -133,11 +133,14 @@ class SDL3Test
     {
         bool isRunning = true;
 
-        var updateFunc = Buwan["OnUpdate"].Read<LuaFunction>();
-        var drawFunc = Buwan["OnDraw"].Read<LuaFunction>();
-        var readFunc = Buwan["OnReady"].Read<LuaFunction>();
+        var updateFunc = App["OnUpdate"].Read<LuaFunction>();
+        var drawFunc = App["OnDraw"].Read<LuaFunction>();
+        bool hasReadyFunc = App["OnReady"].TryRead<LuaFunction>(out var readyFunc);
 
-        await Lua.RunAsync(readFunc);
+        if (hasReadyFunc)
+        {
+            await Lua.RunAsync(readyFunc);
+        }
 
         while (isRunning)
         {
