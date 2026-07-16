@@ -50,9 +50,13 @@ class SDL3Test
         };
     }
 
-    private void OpenDrawingModule()
+    private void OpenGraphicsModule()
     {
-        Lua.Environment["ClearScreen"] = new LuaFunction((context, ct) =>
+        var graphics = new LuaTable();
+
+        Lua.Environment["Graphics"] = graphics;
+
+        graphics["ClearScreen"] = new LuaFunction((context, ct) =>
         {
             SDL.SetRenderDrawColorFloat(Renderer, 0, 0, 0, 1);
             SDL.RenderClear(Renderer);
@@ -60,7 +64,7 @@ class SDL3Test
             return new(0);
         });
 
-        Lua.Environment["SetColor"] = new LuaFunction((context, ct) =>
+        graphics["SetColor"] = new LuaFunction((context, ct) =>
         {
             SDL.SetRenderDrawColorFloat(Renderer,
                 context.Arguments[0].Read<float>(),
@@ -73,7 +77,7 @@ class SDL3Test
         });
 
 
-        Lua.Environment["FillRectangle"] = new LuaFunction((context, ct) =>
+        graphics["FillRectangle"] = new LuaFunction((context, ct) =>
         {
             SDL.RenderFillRect(Renderer, new SDL.FRect
             {
@@ -96,7 +100,7 @@ class SDL3Test
 
         var appConfig = await GetBuwanAppConfigAsync();
 
-        OpenDrawingModule();
+        OpenGraphicsModule();
 
         SDL.SetAppMetadata(appConfig.AppName,
                            appConfig.AppVersion,

@@ -10,7 +10,7 @@ function Buwan.OnUpdate(deltaTime)
 end
 
 function Buwan.OnDraw()
-	ClearScreen()
-	SetColor(1, 1, 1) -- Color white
-	FillRectangle(X, Y, 100, 100)
+	Graphics.ClearScreen()
+	Graphics.SetColor(1, 1, 1) -- Color white
+	Graphics.FillRectangle(X, Y, 100, 100)
 end
