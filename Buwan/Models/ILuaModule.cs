@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Buwan.Model
+namespace Buwan.Models
 {
     internal interface ILuaModule
     {
