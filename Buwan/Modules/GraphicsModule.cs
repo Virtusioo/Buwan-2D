@@ -45,6 +45,8 @@ namespace Buwan.Modules
 
             module["SetColor"] = new LuaFunction((context, ct) =>
             {
+                Console.WriteLine(context.GetArgument(0).Type);
+
                 SDL.GetRenderDrawColorFloat(Renderer,
                                             out _,
                                             out _,
@@ -60,7 +62,7 @@ namespace Buwan.Modules
                 return new(0);
             });
 
-            module["FillRectangle"] = new LuaFunction((context, ct) =>
+            module["DrawRectangle"] = new LuaFunction((context, ct) =>
             {
                 SDL.RenderFillRect(Renderer, new SDL.FRect
                 {
