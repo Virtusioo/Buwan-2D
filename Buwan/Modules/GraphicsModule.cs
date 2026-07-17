@@ -9,10 +9,44 @@ namespace Buwan.Modules
 {
     internal class GraphicsModule(nint renderer) : ILuaModule
     {
+        private class PropertiesState
+        {
+            public float Alpha = 1;
+            public float R = 0;
+            public float G = 0;
+            public float B = 0;
+        }
+
         public nint Renderer { get; private set; } = renderer;
+        private Stack<PropertiesState> _propStack= [];
+
+        private void BeginState()
+        {
+            _propStack.Push(new PropertiesState());
+        }
+
+        private PropertiesState GetState()
+        {
+            return _propStack.Peek();
+        }
+
+        private void EndState()
+        {
+            _propStack.Pop();
+
+            var props = GetState();
+
+            SDL.SetRenderDrawColorFloat(Renderer, 
+                                        props.R, 
+                                        props.G, 
+                                        props.B, 
+                                        props.Alpha);
+        }
 
         public void OnCreate(LuaTable module)
         {
+            BeginState();
+
             module["ClearScreen"] = new LuaFunction((context, ct) =>
             {
                 SDL.GetRenderDrawColorFloat(Renderer, 
@@ -28,17 +62,28 @@ namespace Buwan.Modules
                 return new(0);
             });
 
+            module["BeginState"] = new LuaFunction((context, ct) =>
+            {
+                BeginState();
+
+                return new(0);
+            });
+
+            module["EndState"] = new LuaFunction((context, ct) =>
+            {
+                EndState();
+
+                return new(0);
+            });
+
             module["SetAlpha"] = new LuaFunction((context, ct) =>
             {
                 float alpha = context.GetArgument<float>(0);
+                var state = GetState();
 
-                SDL.GetRenderDrawColorFloat(Renderer,
-                                            out var r,
-                                            out var g,
-                                            out var b,
-                                            out _);
+                state.Alpha = alpha;
 
-                SDL.SetRenderDrawColorFloat(Renderer, r, g, b, alpha);
+                SDL.SetRenderDrawColorFloat(Renderer, state.R, state.G, state.B, alpha);
 
                 return new(0);
             });
@@ -46,6 +91,7 @@ namespace Buwan.Modules
             module["SetColor"] = new LuaFunction((context, ct) =>
             {
                 float r, g, b;
+                var state = GetState();
 
                 if (context.ArgumentCount == 1)
                 {
@@ -62,13 +108,11 @@ namespace Buwan.Modules
                     b = context.GetArgument<float>(2);
                 }
 
-                SDL.GetRenderDrawColorFloat(Renderer,
-                                            out _,
-                                            out _,
-                                            out _,
-                                            out var a);
+                state.R = r;
+                state.G = g;
+                state.B = b;
 
-                SDL.SetRenderDrawColorFloat(Renderer, r, g, b, a);
+                SDL.SetRenderDrawColorFloat(Renderer, r, g, b, state.Alpha);
 
                 return new(0);
             });
