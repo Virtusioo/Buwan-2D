@@ -8,6 +8,7 @@ using Buwan.Modules;
 using Lua;
 using SDL3;
 using Buwan.Exceptions;
+using Lua.Standard;
 
 namespace Buwan.Runtime
 {
@@ -39,6 +40,8 @@ namespace Buwan.Runtime
             {
                 throw new Exception($"SDL.Init() failed: {SDL.GetError()}");
             }
+
+            Lua.OpenStandardLibraries();
 
             ProjectPath = projectPath;
         }
@@ -154,8 +157,15 @@ namespace Buwan.Runtime
             await InitWindowAsync(callbacks.GetConfig);
             await Lua.RunAsync(callbacks.OnReady);
 
+            ulong previousPerformanceCount = SDL.GetPerformanceCounter();
+
             while (!windowShouldClose)
             {
+                ulong currentPerformanceCount = SDL.GetPerformanceCounter();
+                float deltaTime = (float)(currentPerformanceCount - previousPerformanceCount) / SDL.GetPerformanceFrequency();
+
+                previousPerformanceCount = currentPerformanceCount;
+
                 while (SDL.PollEvent(out var e))
                 {
                     switch ((SDL.EventType)e.Type)
@@ -166,7 +176,9 @@ namespace Buwan.Runtime
                     }
                 }
 
-                await Lua.RunAsync(callbacks.OnUpdate);
+                LuaValue[] updateArgs = [deltaTime];
+
+                await Lua.CallAsync(callbacks.OnUpdate, updateArgs);
                 await Lua.RunAsync(callbacks.OnDraw);
 
                 SDL.RenderPresent(Renderer);
