@@ -7,7 +7,7 @@ function App.GetConfig()
 		-- App metadata --
 		Name = "Basic", -- The name of the app 
 		Version = "1.0.0", -- The version of the app: MAJOR.MINOR.PATCH
-		Identifier = "com.buwan.basic" -- The identifier of the app (e.g. com.companyname.appname)
+		Identifier = "com.buwan.basic", -- The identifier of the app (e.g. com.companyname.appname)
 
 		-- Screen defaults --
 		ScreenWidth = 800, -- The initial window width 
