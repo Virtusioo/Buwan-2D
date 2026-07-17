@@ -27,7 +27,7 @@ namespace Buwan.Modules
             B = b;
         }
 
-        [LuaMember("FromRGB")]
+        [LuaMember("fromRGB")]
         public static LuaColor FromRGB(float r, float g, float b)
         {
             return new LuaColor
