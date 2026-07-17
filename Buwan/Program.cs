@@ -12,14 +12,14 @@ internal class Program
     {
         Console.WriteLine("Usage: buwan <command> [args]");
         Console.WriteLine("Commands:");
-        Console.WriteLine("     project [name]          Create a named project");
+        Console.WriteLine("     create [name]           Create a named project");
         Console.WriteLine("     export [platform]       Export project to a platform");
         Console.WriteLine("     platforms               List available platforms");
         Console.WriteLine("     help                    Show this message again");
-        Console.WriteLine("     run                     Run a project");
+        Console.WriteLine("     run [projectPath]       Run a project");
     }
 
-    public static string GetArgument(int index, string what)
+    private static string GetArgument(int index, string what)
     {
         if (index >= _args!.Length)
         {
@@ -29,7 +29,7 @@ internal class Program
         return _args[index];
     }
 
-    public static void HandleProjectCommand(string projectName)
+    private static void HandleCreateCommand(string projectName)
     {
         Directory.CreateDirectory(projectName);
 
@@ -58,20 +58,34 @@ internal class Program
         Console.WriteLine($"Created project named '{projectName}'");
     }
 
-    public static void HandleCommands()
+    private static void HandleRunCommand(string projectPath)
+    {
+        Application app = new(projectPath);
+
+        Console.WriteLine("Running project..");
+        app.Run();
+        Console.WriteLine("Finished running project");
+    }
+
+    private static void HandleCommands()
     {
         string command = GetArgument(0, "command");
         string arg1;
 
         switch (command)
         {
-            case "project":
+            case "create":
                 arg1 = GetArgument(1, "project name");
-                HandleProjectCommand(arg1);
+                HandleCreateCommand(arg1);
                 break;
 
             case "help":
                 ShowUsage();
+                break;
+
+            case "run":
+                arg1 = GetArgument(1, "project path");
+                HandleRunCommand(arg1);
                 break;
 
             default:
