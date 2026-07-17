@@ -37,22 +37,50 @@ internal class Program
         var fileNames = Directory.EnumerateFiles(basicTemplatePath, 
                                                  "*", 
                                                  SearchOption.AllDirectories);
-  
+
+        bool askedToOverwriteFiles = false;
+        bool overwriteExistingFiles = false;
 
         foreach (string fileName in fileNames)
         {
             string baseFileName = fileName.Replace(basicTemplatePath, "");
             string destFileName = $"{projectName}/{baseFileName}";
-            
-            if (!File.Exists(destFileName))
+            string destDirectory = Path.GetDirectoryName(destFileName)!;
+
+            if (!Directory.Exists(destDirectory))
             {
-                File.Copy(fileName, destFileName);
-                Console.WriteLine($"Copied '{fileName}'");
+                Directory.CreateDirectory(destDirectory);
             }
-            else
+
+            if (File.Exists(destFileName) && !askedToOverwriteFiles)
             {
-                Console.WriteLine($"File '{fileName}' already exists");
+                askedToOverwriteFiles = true;
+
+                Console.WriteLine($"File '{destFileName}' already exists");
+                Console.WriteLine("Would you like to overwrite already existing files? (Y or N)");
+
+                string input;
+
+                while (true)
+                {
+                    Console.Write("  >> ");
+                    input = Console.ReadLine()!.ToLower();
+
+                    if (input != "y" && input != "n")
+                    {
+                        Console.WriteLine("Invalid input. (Y or N)");
+                        continue;
+                    }
+
+                    overwriteExistingFiles = input == "y";
+                    break;
+                }
             }
+
+            string action = File.Exists(destFileName) ? "Overwritten" : "Copied";
+
+            File.Copy(fileName, destFileName, overwriteExistingFiles);
+            Console.WriteLine($"{action} '{fileName}'");
         }
 
         Console.WriteLine($"Created project named '{projectName}'");
