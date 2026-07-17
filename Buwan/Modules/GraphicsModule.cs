@@ -18,7 +18,7 @@ namespace Buwan.Modules
         }
 
         public nint Renderer { get; private set; } = renderer;
-        private Stack<PropertiesState> _propStack= [];
+        private Stack<PropertiesState> _propStack = [];
 
         private void BeginState()
         {
