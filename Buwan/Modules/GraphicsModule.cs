@@ -45,7 +45,22 @@ namespace Buwan.Modules
 
             module["SetColor"] = new LuaFunction((context, ct) =>
             {
-                Console.WriteLine(context.GetArgument(0).Type);
+                float r, g, b;
+
+                if (context.ArgumentCount == 1)
+                {
+                    LuaColor color = context.GetArgument<LuaColor>(0);
+
+                    r = color.R;
+                    g = color.G;
+                    b = color.B;
+                }
+                else
+                {
+                    r = context.GetArgument<float>(0);
+                    g = context.GetArgument<float>(1);
+                    b = context.GetArgument<float>(2);
+                }
 
                 SDL.GetRenderDrawColorFloat(Renderer,
                                             out _,
@@ -53,11 +68,7 @@ namespace Buwan.Modules
                                             out _,
                                             out var a);
 
-                SDL.SetRenderDrawColorFloat(Renderer,
-                                            context.GetArgument<float>(0),
-                                            context.GetArgument<float>(1),
-                                            context.GetArgument<float>(2),
-                                            a);
+                SDL.SetRenderDrawColorFloat(Renderer, r, g, b, a);
 
                 return new(0);
             });
