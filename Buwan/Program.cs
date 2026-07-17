@@ -46,8 +46,8 @@ internal class Program
             
             if (!File.Exists(destFileName))
             {
-                Console.WriteLine($"Copying '{fileName}'");
                 File.Copy(fileName, destFileName);
+                Console.WriteLine($"Copied '{fileName}'");
             }
             else
             {
