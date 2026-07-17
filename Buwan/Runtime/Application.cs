@@ -5,6 +5,7 @@ using System.Text;
 using Buwan.Common;
 using Buwan.Utils;
 using Buwan.Modules;
+using Buwan.Modules.Objects;
 using Lua;
 using SDL3;
 using Buwan.Exceptions;
@@ -141,6 +142,7 @@ namespace Buwan.Runtime
 
             // Add all required objects (e.g., Color, Vector2)
             Lua.Environment["Color"] = new LuaColor();
+            Lua.Environment["Rectangle"] = new LuaRectangle();
         }
         private void CloseWindow()
         {

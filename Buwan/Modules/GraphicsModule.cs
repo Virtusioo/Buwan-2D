@@ -1,4 +1,5 @@
 ﻿using Buwan.Models;
+using Buwan.Modules.Objects;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -92,40 +93,26 @@ namespace Buwan.Modules
             {
                 float r, g, b;
                 var state = GetState();
+                LuaColor color = context.GetArgument<LuaColor>(0);
 
-                if (context.ArgumentCount == 1)
-                {
-                    LuaColor color = context.GetArgument<LuaColor>(0);
+                r = color.R;
+                g = color.G;
+                b = color.B;
 
-                    r = color.R;
-                    g = color.G;
-                    b = color.B;
-                }
-                else
-                {
-                    r = context.GetArgument<float>(0);
-                    g = context.GetArgument<float>(1);
-                    b = context.GetArgument<float>(2);
-                }
+                SDL.SetRenderDrawColorFloat(Renderer, r, g, b, state.Alpha);
 
                 state.R = r;
                 state.G = g;
                 state.B = b;
-
-                SDL.SetRenderDrawColorFloat(Renderer, r, g, b, state.Alpha);
 
                 return new(0);
             });
 
             module["DrawRectangle"] = new LuaFunction((context, ct) =>
             {
-                SDL.RenderFillRect(Renderer, new SDL.FRect
-                {
-                    X = context.GetArgument<float>(0),
-                    Y = context.GetArgument<float>(1),
-                    W = context.GetArgument<float>(2),
-                    H = context.GetArgument<float>(3)
-                });
+                var rectangle = context.GetArgument<LuaRectangle>(0);
+
+                SDL.RenderFillRect(Renderer, rectangle.Rect);
 
                 return new(0);
             });
