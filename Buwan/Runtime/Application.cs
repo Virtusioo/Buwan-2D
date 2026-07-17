@@ -70,7 +70,7 @@ namespace Buwan.Runtime
             // Optional callbacks
             onReadyFunc.TryRead<LuaFunction>(out var onReadyCallback);
 
-            return new()
+            return new LuaAppCallbacks
             {
                 GetConfig = getConfigFunc.Read<LuaFunction>(),
                 OnReady = onReadyCallback,
