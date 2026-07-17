@@ -1,7 +1,7 @@
 
 
 -- Get the default app configuration 
----@returns The default app configuration table
+---@return table The default app configuration table
 function App.GetConfig()
 	return {
 		-- App metadata --

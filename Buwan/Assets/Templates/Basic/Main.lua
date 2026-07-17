@@ -1,8 +1,11 @@
 
--- Runs after every module has initialized (e.g., Graphics, Colors)
----@note You can remove this function 
+local myRectangle
+
+-- Runs after every module has initialized (e.g., Graphics, Colors).
+-- You can remove this function 
 function App.OnReady()
 	-- Initialize stuff here
+	myRectangle = Rectangle.new(10, 10, 100, 100)
 end
 
 -- Runs on every app update
@@ -14,6 +17,7 @@ end
 -- Runs on every app draw
 function App.OnDraw()
 	-- Draw stuff here
+	Graphics.ClearScreen()
 	Graphics.SetColor(Colors.Red)
-	Graphics.DrawRectangle(10, 10, 100, 100)
+	Graphics.DrawRectangle(myRectangle)
 end
