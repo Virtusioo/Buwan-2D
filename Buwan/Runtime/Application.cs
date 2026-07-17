@@ -16,7 +16,7 @@ namespace Buwan.Runtime
         public LuaState Lua { get; private set; } = LuaState.Create();
         public nint Renderer { get; private set; }
         public nint Window { get; private set; }
-        public string ProjectName { get; private set; }
+        public string ProjectPath { get; private set; }
 
         private struct LuaAppCallbacks
         {
@@ -33,14 +33,14 @@ namespace Buwan.Runtime
             public required string Identifier;
         } 
 
-        public Application(string projectName)
+        public Application(string projectPath)
         {
             if (!SDL.Init(SDL.InitFlags.Video))
             {
                 throw new Exception($"SDL.Init() failed: {SDL.GetError()}");
             }
 
-            ProjectName = projectName;
+            ProjectPath = projectPath;
         }
 
         private async Task<LuaAppCallbacks> LoadMainAsync()
@@ -49,20 +49,9 @@ namespace Buwan.Runtime
 
             Lua.Environment["App"] = appModule;
 
-            // Add all required objects (e.g., Color, Vector2)
-            Lua.Environment["Color"] = new LuaColor();
-
             // Run these to get all required callbacks
-            await Lua.DoFileAsync($"{ProjectName}/Config.lua");
-            await Lua.DoFileAsync($"{ProjectName}/Main.lua");
-
-            // Open all modules
-            LuaLibraryBuilder builder = new();
-            builder.PutModule("Graphics", new GraphicsModule(Renderer));
-            builder.PutModule("Colors", new ColorsModule());
-
-            // Build all modules to current lua environment
-            builder.BuildToTable(Lua.Environment);
+            await Lua.DoFileAsync($"{ProjectPath}/Config.lua");
+            await Lua.DoFileAsync($"{ProjectPath}/Main.lua");
 
             // Try getting all app callbacks
             appModule.TryGetValue("GetConfig", out var getConfigFunc);
@@ -132,11 +121,23 @@ namespace Buwan.Runtime
                 throw new SDLException($"SDL.CreateRenderer() failed: {SDL.GetError()}");
             }
 
+            SDL.ShowWindow(Window);
             SDL.SetRenderVSync(Renderer, 1);
             SDL.SetRenderLogicalPresentation(Renderer, 
                                              windowWidth, 
                                              windowHeight, 
                                              SDL.RendererLogicalPresentation.Letterbox);
+
+            // Finally open all modules
+            LuaLibraryBuilder builder = new();
+            builder.PutModule("Graphics", new GraphicsModule(Renderer));
+            builder.PutModule("Colors", new ColorsModule());
+
+            // Build all modules to current lua environment
+            builder.BuildToTable(Lua.Environment);
+
+            // Add all required objects (e.g., Color, Vector2)
+            Lua.Environment["Color"] = new LuaColor();
         }
         private void CloseWindow()
         {
