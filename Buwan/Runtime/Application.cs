@@ -49,6 +49,9 @@ namespace Buwan.Runtime
 
             Lua.Environment["App"] = appModule;
 
+            // Add all required objects (e.g., Color, Vector2)
+            Lua.Environment["Color"] = new LuaColor();
+
             // Run these to get all required callbacks
             await Lua.DoFileAsync($"{ProjectName}/Config.lua");
             await Lua.DoFileAsync($"{ProjectName}/Main.lua");
