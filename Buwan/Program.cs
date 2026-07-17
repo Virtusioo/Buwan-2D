@@ -33,6 +33,28 @@ internal class Program
     {
         Directory.CreateDirectory(projectName);
 
+        string basicTemplatePath = Path.Combine("Assets", "Templates", "Basic");
+        var fileNames = Directory.EnumerateFiles(basicTemplatePath, 
+                                                 "*", 
+                                                 SearchOption.AllDirectories);
+  
+
+        foreach (string fileName in fileNames)
+        {
+            string baseFileName = fileName.Replace(basicTemplatePath, "");
+            string destFileName = $"{projectName}/{baseFileName}";
+            
+            if (!File.Exists(destFileName))
+            {
+                Console.WriteLine($"Copying '{fileName}'");
+                File.Copy(fileName, destFileName);
+            }
+            else
+            {
+                Console.WriteLine($"File '{fileName}' already exists");
+            }
+        }
+
         Console.WriteLine($"Created project named '{projectName}'");
     }
 
