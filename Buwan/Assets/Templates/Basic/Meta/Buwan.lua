@@ -52,7 +52,7 @@ function Rectangle.new(x, y, width, height) end
 
 Graphics = {}
 
--- Clear the screen 
+-- Clear the screen with the current drawing color
 function Graphics.ClearScreen() end
 
 -- Begin properties state for drawing
