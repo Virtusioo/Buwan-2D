@@ -77,10 +77,12 @@ internal class Program
                 }
             }
 
-            string action = File.Exists(destFileName) ? "Overwritten" : "Copied";
+            bool destFileExists = File.Exists(destFileName);
+            string action = destFileExists ? "Overwritten" : "Copied";
+            string actionArg = destFileExists ? destFileName : fileName;
 
             File.Copy(fileName, destFileName, overwriteExistingFiles);
-            Console.WriteLine($"{action} '{destFileName}'");
+            Console.WriteLine($"{action} '{actionArg}'");
         }
 
         Console.WriteLine($"Created project named '{projectName}'");
