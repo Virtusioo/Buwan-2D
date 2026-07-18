@@ -1,12 +1,11 @@
 
-local MyRectangle
+local MyRectangle = Rectangle.new(10, 10, 100, 100)
 local RectangleSpeed = 60
 
 -- Runs after every module has initialized (e.g., Graphics, Colors).
 -- You can remove this function 
 function App.OnReady()
 	-- Initialize stuff here
-	MyRectangle = Rectangle.new(10, 10, 100, 100)
 end
 
 -- Runs on every app update
