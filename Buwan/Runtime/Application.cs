@@ -19,6 +19,7 @@ namespace Buwan.Runtime
         public nint Renderer { get; private set; }
         public nint Window { get; private set; }
         public string ProjectPath { get; private set; }
+        private BuwanLibraryBinder _library;
 
         private struct LuaAppCallbacks
         {
@@ -45,6 +46,16 @@ namespace Buwan.Runtime
             Lua.OpenStandardLibraries();
 
             ProjectPath = projectPath;
+            _library = new(Lua);
+
+            // Bind objects
+            Lua.Environment["Color"] = new BuwanColor();
+            Lua.Environment["Rectangle"] = new BuwanRectangle();
+
+            // Bind modules
+            _library.AddModule<GraphicsModule>();
+            _library.AddModule<ColorsModule>();
+            _library.BindModules();
         }
 
         private async Task<LuaAppCallbacks> LoadMainAsync()
@@ -52,8 +63,6 @@ namespace Buwan.Runtime
             LuaTable appModule = new();
 
             Lua.Environment["App"] = appModule;
-            Lua.Environment["Color"] = new LuaColor();
-            Lua.Environment["Rectangle"] = new LuaRectangle();
 
             // Run these to get all required callbacks
             await Lua.DoFileAsync($"{ProjectPath}/Config.lua");
@@ -127,20 +136,16 @@ namespace Buwan.Runtime
                 throw new SDLException($"SDL.CreateRenderer() failed: {SDL.GetError()}");
             }
 
+            GraphicsModule graphicsModule = _library.GetModule<GraphicsModule>();
+
+            graphicsModule.Renderer = Renderer; // Set needed renderer for bound graphics module
+
             SDL.ShowWindow(Window);
             SDL.SetRenderVSync(Renderer, 1);
             SDL.SetRenderLogicalPresentation(Renderer, 
                                              windowWidth, 
                                              windowHeight, 
                                              SDL.RendererLogicalPresentation.Letterbox);
-
-            // Finally open all modules
-            LuaLibraryBuilder builder = new();
-            builder.PutModule("Graphics", new GraphicsModule(Renderer));
-            builder.PutModule("Colors", new ColorsModule());
-
-            // Build all modules to current lua environment
-            builder.BuildToTable(Lua.Environment);
         }
         private void CloseWindow()
         {
