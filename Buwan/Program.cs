@@ -81,7 +81,13 @@ internal class Program
             string action = destFileExists ? "Overwritten" : "Copied";
             string actionArg = destFileExists ? destFileName : fileName;
 
-            File.Copy(fileName, destFileName, overwriteExistingFiles);
+            if (destFileExists && !overwriteExistingFiles)
+            {
+                Console.WriteLine($"File '{destFileName}' already exists");
+                continue;
+            }
+
+            File.Copy(fileName, destFileName, true);
             Console.WriteLine($"{action} '{actionArg}'");
         }
 
