@@ -33,7 +33,7 @@ internal class Program
     {
         Directory.CreateDirectory(projectName);
 
-        string basicTemplatePath = Path.Combine("Assets", "Templates", "Basic");
+        string basicTemplatePath = Path.Combine(AppContext.BaseDirectory, "Assets", "Templates", "Basic");
         var fileNames = Directory.EnumerateFiles(basicTemplatePath, 
                                                  "*", 
                                                  SearchOption.AllDirectories);
@@ -80,7 +80,7 @@ internal class Program
             string action = File.Exists(destFileName) ? "Overwritten" : "Copied";
 
             File.Copy(fileName, destFileName, overwriteExistingFiles);
-            Console.WriteLine($"{action} '{fileName}'");
+            Console.WriteLine($"{action} '{destFileName}'");
         }
 
         Console.WriteLine($"Created project named '{projectName}'");
