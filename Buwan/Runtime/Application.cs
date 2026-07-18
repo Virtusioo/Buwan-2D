@@ -51,8 +51,10 @@ namespace Buwan.Runtime
             // Bind objects
             Lua.Environment["Color"] = new BuwanColor();
             Lua.Environment["Rectangle"] = new BuwanRectangle();
+            Lua.Environment["Vector2"] = new BuwanVector2();
 
             // Bind modules
+            _library.AddModule<AppModule>();
             _library.AddModule<GraphicsModule>();
             _library.AddModule<ColorsModule>();
             _library.BindModules();
@@ -60,9 +62,7 @@ namespace Buwan.Runtime
 
         private async Task<LuaAppCallbacks> LoadMainAsync()
         {
-            LuaTable appModule = new();
-
-            Lua.Environment["App"] = appModule;
+            LuaTable appModule = Lua.Environment["App"].Read<LuaTable>();
 
             // Run these to get all required callbacks
             await Lua.DoFileAsync($"{ProjectPath}/Config.lua");
@@ -157,14 +157,16 @@ namespace Buwan.Runtime
         private async Task RunAsync()
         {
             LuaAppCallbacks callbacks = await LoadMainAsync();
-            bool windowShouldClose = false;
+            AppModule appModule = _library.GetModule<AppModule>();
+
+            appModule.IsRunning = true;
 
             await InitWindowAsync(callbacks.GetConfig);
             await Lua.RunAsync(callbacks.OnReady);
 
             ulong previousPerformanceCount = SDL.GetPerformanceCounter();
 
-            while (!windowShouldClose)
+            while (appModule.IsRunning)
             {
                 ulong currentPerformanceCount = SDL.GetPerformanceCounter();
                 float deltaTime = (float)(currentPerformanceCount - previousPerformanceCount) / SDL.GetPerformanceFrequency();
@@ -176,7 +178,7 @@ namespace Buwan.Runtime
                     switch ((SDL.EventType)e.Type)
                     {
                         case SDL.EventType.Quit:
-                            windowShouldClose = true;
+                            appModule.IsRunning = false;
                             break;
                     }
                 }
