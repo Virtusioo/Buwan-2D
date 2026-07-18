@@ -19,7 +19,9 @@ end
 -- Runs on every app draw
 function App.OnDraw()
 	-- Draw stuff here
-	Graphics.ClearScreen()
+	Graphics.SetColor(Colors.Black)
+	Graphics.ClearScreen() -- Clear the screen with the current color (Black)
+
 	Graphics.SetColor(Colors.Red)
-	Graphics.DrawRectangle(MyRectangle)
+	Graphics.DrawRectangle(MyRectangle) 
 end
