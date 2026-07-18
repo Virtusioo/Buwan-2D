@@ -18,8 +18,8 @@ namespace Buwan.Modules
             module["Black"] = new BuwanColor(0, 0, 0);
             module["White"] = new BuwanColor(1, 1, 1);
             module["Red"] = new BuwanColor(1, 0, 0);
-            module["Blue"] = new BuwanColor(0, 1, 0);
-            module["Green"] = new BuwanColor(0, 0, 1);
+            module["Green"] = new BuwanColor(0, 1, 0);
+            module["Blue"] = new BuwanColor(0, 0, 1);
         }
     }
 }
