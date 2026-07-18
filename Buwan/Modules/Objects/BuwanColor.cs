@@ -6,7 +6,7 @@ using System.Text;
 namespace Buwan.Modules.Objects
 {
     [LuaObject]
-    internal partial class LuaColor
+    internal partial class BuwanColor
     {
         [LuaMember("R")]
         public float R;
@@ -17,9 +17,9 @@ namespace Buwan.Modules.Objects
         [LuaMember("B")]
         public float B;
 
-        public LuaColor() { }
+        public BuwanColor() { }
 
-        public LuaColor(float r, float g, float b)
+        public BuwanColor(float r, float g, float b)
         {
             R = r;
             G = g;
@@ -27,15 +27,15 @@ namespace Buwan.Modules.Objects
         }
 
         [LuaMember("new")]
-        public static LuaColor New(float r, float g, float b)
+        public static BuwanColor New(float r, float g, float b)
         {
             return new(r, g, b);
         }
 
         [LuaMember("fromRGB")]
-        public static LuaColor FromRGB(float r, float g, float b)
+        public static BuwanColor FromRGB(float r, float g, float b)
         {
-            return new LuaColor
+            return new BuwanColor
             {
                 R = r / 255,
                 G = g / 255,

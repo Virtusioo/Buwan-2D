@@ -7,7 +7,7 @@ using SDL3;
 namespace Buwan.Modules.Objects
 {
     [LuaObject]
-    internal partial class LuaRectangle
+    internal partial class BuwanRectangle
     {
         public SDL.FRect Rect;
 
@@ -40,9 +40,9 @@ namespace Buwan.Modules.Objects
         }
 
         [LuaMember("new")]
-        public static LuaRectangle New(float x, float y, float width, float height)
+        public static BuwanRectangle New(float x, float y, float width, float height)
         {
-            return new LuaRectangle
+            return new BuwanRectangle
             {
                 Rect = new SDL.FRect
                 {
