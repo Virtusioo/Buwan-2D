@@ -50,15 +50,7 @@ namespace Buwan.Modules
 
             module["ClearScreen"] = new LuaFunction((context, ct) =>
             {
-                SDL.GetRenderDrawColorFloat(Renderer, 
-                                            out var r, 
-                                            out var g, 
-                                            out var b, 
-                                            out var a);
-
-                SDL.SetRenderDrawColorFloat(Renderer, 0, 0, 0, 1);
                 SDL.RenderClear(Renderer);
-                SDL.SetRenderDrawColorFloat(Renderer, r, g, b, a);
 
                 return new(0);
             });
