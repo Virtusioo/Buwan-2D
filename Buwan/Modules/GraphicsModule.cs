@@ -8,8 +8,12 @@ using SDL3;
 
 namespace Buwan.Modules
 {
-    internal class GraphicsModule(nint renderer) : ILuaModule
+    internal class GraphicsModule : BuwanModule
     {
+        public GraphicsModule()
+            : base("Graphics")
+        {}
+
         private class PropertiesState
         {
             public float Alpha = 1;
@@ -18,8 +22,8 @@ namespace Buwan.Modules
             public float B = 0;
         }
 
-        public nint Renderer { get; private set; } = renderer;
-        private Stack<PropertiesState> _propStack = [];
+        public nint Renderer;
+        private readonly Stack<PropertiesState> _propStack = [];
 
         private void BeginState()
         {
@@ -44,7 +48,7 @@ namespace Buwan.Modules
                                         props.Alpha);
         }
 
-        public void OnCreate(LuaTable module)
+        public override void OnCreate(LuaTable module)
         {
             BeginState();
 
@@ -85,7 +89,7 @@ namespace Buwan.Modules
             {
                 float r, g, b;
                 var state = GetState();
-                LuaColor color = context.GetArgument<LuaColor>(0);
+                BuwanColor color = context.GetArgument<BuwanColor>(0);
 
                 r = color.R;
                 g = color.G;
@@ -102,7 +106,7 @@ namespace Buwan.Modules
 
             module["DrawRectangle"] = new LuaFunction((context, ct) =>
             {
-                var rectangle = context.GetArgument<LuaRectangle>(0);
+                var rectangle = context.GetArgument<BuwanRectangle>(0);
 
                 SDL.RenderFillRect(Renderer, rectangle.Rect);
 
