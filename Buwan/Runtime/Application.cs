@@ -52,6 +52,8 @@ namespace Buwan.Runtime
             LuaTable appModule = new();
 
             Lua.Environment["App"] = appModule;
+            Lua.Environment["Color"] = new LuaColor();
+            Lua.Environment["Rectangle"] = new LuaRectangle();
 
             // Run these to get all required callbacks
             await Lua.DoFileAsync($"{ProjectPath}/Config.lua");
@@ -139,10 +141,6 @@ namespace Buwan.Runtime
 
             // Build all modules to current lua environment
             builder.BuildToTable(Lua.Environment);
-
-            // Add all required objects (e.g., Color, Vector2)
-            Lua.Environment["Color"] = new LuaColor();
-            Lua.Environment["Rectangle"] = new LuaRectangle();
         }
         private void CloseWindow()
         {
