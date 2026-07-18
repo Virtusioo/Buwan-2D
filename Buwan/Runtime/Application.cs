@@ -19,7 +19,7 @@ namespace Buwan.Runtime
         public nint Renderer { get; private set; }
         public nint Window { get; private set; }
         public string ProjectPath { get; private set; }
-        private BuwanLibraryBinder _library;
+        private readonly BuwanLibraryBinder _library;
 
         private struct LuaAppCallbacks
         {
