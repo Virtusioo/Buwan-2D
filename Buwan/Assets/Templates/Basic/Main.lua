@@ -1,5 +1,6 @@
 
 local myRectangle
+local RectangleSpeed = 60
 
 -- Runs after every module has initialized (e.g., Graphics, Colors).
 -- You can remove this function 
@@ -12,6 +13,7 @@ end
 ---@param deltaTime number How long the last frame took in seconds
 function App.OnUpdate(deltaTime)
 	-- Update stuff here
+	myRectangle.X = myRectangle.X + RectangleSpeed * deltaTime
 end
 
 -- Runs on every app draw
