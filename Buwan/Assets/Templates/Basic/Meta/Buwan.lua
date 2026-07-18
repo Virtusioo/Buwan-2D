@@ -13,12 +13,14 @@ Color = {}
 ---@param r number The red value ranging from 0.0 to 1.0 
 ---@param g number The green value ranging from 0.0 to 1.0 
 ---@param b number The blue value ranging from 0.0 to 1.0
+---@return Color 
 function Color.new(r, g, b) end 
 
 -- Create a new color object 
 ---@param r number The red value ranging from 0 to 255 
 ---@param g number The green value ranging from 0 to 255 
 ---@param b number The blue value ranging from 0 to 255
+---@return Color 
 function Color.fromRGB(r, g, b) end 
 
 ---@return Color 
@@ -45,6 +47,7 @@ Rectangle = {}
 ---@param y number The vertical position of the rectangle  
 ---@param width number The width of the rectangle 
 ---@param height number The height of the rectangle 
+---@return Rectangle
 function Rectangle.new(x, y, width, height) end
 
 Graphics = {}
