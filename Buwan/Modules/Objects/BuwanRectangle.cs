@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using SDL3;
+using System.Drawing;
 
 namespace Buwan.Modules.Objects
 {
@@ -52,6 +53,22 @@ namespace Buwan.Modules.Objects
                     H = height
                 }
             };
+        }
+
+        [LuaMember("CollidesWithRectangle")]
+        public bool CollidesWithRectangle(BuwanRectangle rectangle)
+        {
+            return (X + Width >= rectangle.X &&
+                   X <= rectangle.X + rectangle.Width) ||
+                   (Y >= rectangle.Y &&
+                   Y + Height <= rectangle.Y + rectangle.Height);
+        }
+
+        [LuaMember("CollidesWithPoint")]
+        public bool CollidesWithPoint(BuwanVector2 point)
+        {
+            return (X >= point.X && X <= point.X) ||
+                   (Y >= point.Y && Y <= point.Y);
         }
     }
 }
