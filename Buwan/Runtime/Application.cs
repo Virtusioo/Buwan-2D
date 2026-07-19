@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text;
-using Buwan.Common;
 using Buwan.Utils;
 using Buwan.Modules;
 using Buwan.Modules.Objects;
@@ -19,22 +18,8 @@ namespace Buwan.Runtime
         public nint Renderer { get; private set; }
         public nint Window { get; private set; }
         public string ProjectPath { get; private set; }
-        private readonly BuwanLibraryBinder _library;
-
-        private struct LuaAppCallbacks
-        {
-            public required LuaFunction GetConfig;
-            public required LuaFunction OnReady;
-            public required LuaFunction OnUpdate;
-            public required LuaFunction OnDraw;
-        }
-
-        private struct AppConfig
-        {
-            public required string Name;
-            public required string Version;
-            public required string Identifier;
-        } 
+        public bool WindowShouldClose = false;
+        private readonly AppModule _appModule;
 
         public Application(string projectPath)
         {
@@ -46,56 +31,32 @@ namespace Buwan.Runtime
             Lua.OpenStandardLibraries();
 
             ProjectPath = projectPath;
-            _library = new(Lua);
 
             // Bind objects
-            Lua.Environment["Color"] = new BuwanColor();
-            Lua.Environment["Rectangle"] = new BuwanRectangle();
-            Lua.Environment["Vector2"] = new BuwanVector2();
+            Lua.Environment["Color"] = new Color();
+            Lua.Environment["Rectangle"] = new Rectangle();
+            Lua.Environment["Vector2"] = new Vector2();
 
             // Bind modules
-            _library.AddModule<AppModule>();
-            _library.AddModule<GraphicsModule>();
-            _library.AddModule<ColorsModule>();
-            _library.BindModules();
+            Lua.Environment["App"] = (_appModule = new AppModule(this));
+            Lua.Environment["Graphics"] = new GraphicsModule(this);
+            Lua.Environment["Colors"] = new ColorsModule();
         }
 
-        private async Task<LuaAppCallbacks> LoadMainAsync()
+        private async Task InitWindowAsync()
         {
-            LuaTable appModule = Lua.Environment["App"].Read<LuaTable>();
-
-            // Run these to get all required callbacks
+            // Load Main.lua and Config.lua to get all required callbacks
             await Lua.DoFileAsync($"{ProjectPath}/Config.lua");
             await Lua.DoFileAsync($"{ProjectPath}/Main.lua");
 
-            // Try getting all app callbacks
-            appModule.TryGetValue("GetConfig", out var getConfigFunc);
-            appModule.TryGetValue("OnReady", out var onReadyFunc);
-            appModule.TryGetValue("OnUpdate", out var onUpdateFunc);
-            appModule.TryGetValue("OnDraw", out var onDrawFunc);
+            LuaValue[] returnedValues = await Lua.CallAsync(_appModule.GetConfigFunc, [_appModule]);
 
-            // Optional callbacks
-            onReadyFunc.TryRead<LuaFunction>(out var onReadyCallback);
-
-            return new LuaAppCallbacks
+            if (returnedValues.Length == 0)
             {
-                GetConfig = getConfigFunc.Read<LuaFunction>(),
-                OnReady = onReadyCallback,
-                OnUpdate = onUpdateFunc.Read<LuaFunction>(),
-                OnDraw = onDrawFunc.Read<LuaFunction>()
-            };
-        }
-
-        private async Task InitWindowAsync(LuaFunction getConfigFunc)
-        {
-            int valuesReturned = await Lua.RunAsync(getConfigFunc);
-
-            if (valuesReturned <= 0)
-            {
-                throw new LuaRuntimeException(Lua, new Exception("App.GetConfig() returned 0 values"));
+                throw new LuaRuntimeException(Lua, new Exception("App:GetConfigFunc() returned 0 values"));
             }
 
-            LuaTable configTable = Lua.Pop().Read<LuaTable>();
+            LuaTable configTable = returnedValues[0].Read<LuaTable>();
 
             // Set important app metadata
             string appName = configTable["Name"].Read<string>();
@@ -136,10 +97,6 @@ namespace Buwan.Runtime
                 throw new SDLException($"SDL.CreateRenderer() failed: {SDL.GetError()}");
             }
 
-            GraphicsModule graphicsModule = _library.GetModule<GraphicsModule>();
-
-            graphicsModule.Renderer = Renderer; // Set needed renderer for bound graphics module
-
             SDL.ShowWindow(Window);
             SDL.SetRenderVSync(Renderer, 1);
             SDL.SetRenderLogicalPresentation(Renderer, 
@@ -156,17 +113,15 @@ namespace Buwan.Runtime
 
         private async Task RunAsync()
         {
-            LuaAppCallbacks callbacks = await LoadMainAsync();
-            AppModule appModule = _library.GetModule<AppModule>();
+            WindowShouldClose = false;
 
-            appModule.IsRunning = true;
+            await InitWindowAsync();
 
-            await InitWindowAsync(callbacks.GetConfig);
-            await Lua.RunAsync(callbacks.OnReady);
+            await Lua.CallAsync(_appModule.OnReadyFunc, [_appModule]);
 
             ulong previousPerformanceCount = SDL.GetPerformanceCounter();
 
-            while (appModule.IsRunning)
+            while (!WindowShouldClose)
             {
                 ulong currentPerformanceCount = SDL.GetPerformanceCounter();
                 float deltaTime = (float)(currentPerformanceCount - previousPerformanceCount) / SDL.GetPerformanceFrequency();
@@ -178,15 +133,13 @@ namespace Buwan.Runtime
                     switch ((SDL.EventType)e.Type)
                     {
                         case SDL.EventType.Quit:
-                            appModule.IsRunning = false;
+                            WindowShouldClose = true;
                             break;
                     }
                 }
 
-                LuaValue[] updateArgs = [deltaTime];
-
-                await Lua.CallAsync(callbacks.OnUpdate, updateArgs);
-                await Lua.RunAsync(callbacks.OnDraw);
+                await Lua.CallAsync(_appModule.OnUpdateFunc, [_appModule, deltaTime]);
+                await Lua.CallAsync(_appModule.OnDrawFunc, [_appModule]);
 
                 SDL.RenderPresent(Renderer);
             }
