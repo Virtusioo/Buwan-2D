@@ -1,27 +1,33 @@
-﻿using Buwan.Models;
-using Lua;
+﻿using Lua;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Buwan.Runtime;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Buwan.Modules
 {
-    internal class AppModule : BuwanModule
+    [LuaObject]
+    internal partial class AppModule(Application app)
     {
-        public bool IsRunning = false;
+        public Application App { get; private set; } = app;
 
-        public AppModule()
-            : base("App")
-        {}
+        [LuaMember("GetConfig")]
+        public LuaValue GetConfigFunc;
 
-        public override void OnCreate(LuaTable module)
+        [LuaMember("OnReady")]
+        public LuaValue OnReadyFunc;
+
+        [LuaMember("OnDraw")]
+        public LuaValue OnDrawFunc;
+
+        [LuaMember("OnUpdate")]
+        public LuaValue OnUpdateFunc;
+
+        [LuaMember("Exit")]
+        public void Exit()
         {
-            module["Exit"] = new LuaFunction((context, ct) =>
-            {
-                IsRunning = false;
-
-                return new(0);
-            });
+            App.WindowShouldClose = true;
         }
     }
 }

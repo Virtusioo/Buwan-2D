@@ -1,19 +1,16 @@
-﻿using Buwan.Models;
-using Buwan.Modules.Objects;
+﻿using Buwan.Modules.Objects;
+using Buwan.Runtime;
+using Lua;
+using SDL3;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Lua;
-using SDL3;
 
 namespace Buwan.Modules
 {
-    internal class GraphicsModule : BuwanModule
+    [LuaObject]
+    internal partial class GraphicsModule
     {
-        public GraphicsModule()
-            : base("Graphics")
-        {}
-
         private class PropertiesState
         {
             public float Alpha = 1;
@@ -22,12 +19,13 @@ namespace Buwan.Modules
             public float B = 0;
         }
 
-        public nint Renderer;
+        public Application App { get; private set; }
         private readonly Stack<PropertiesState> _propStack = [];
 
-        private void BeginState()
+        public GraphicsModule(Application app)
         {
-            _propStack.Push(new PropertiesState());
+            BeginState(); // Make sure _propStack isn't empty
+            App = app;
         }
 
         private PropertiesState GetState()
@@ -35,83 +33,63 @@ namespace Buwan.Modules
             return _propStack.Peek();
         }
 
-        private void EndState()
+        [LuaMember("BeginState")]
+        public void BeginState()
+        {
+            _propStack.Push(new PropertiesState());
+        }
+
+        [LuaMember("EndState")]
+        public void EndState()
         {
             _propStack.Pop();
 
             var props = GetState();
 
-            SDL.SetRenderDrawColorFloat(Renderer, 
+            SDL.SetRenderDrawColorFloat(App.Renderer, 
                                         props.R, 
                                         props.G, 
                                         props.B, 
                                         props.Alpha);
         }
 
-        public override void OnCreate(LuaTable module)
+        [LuaMember("ClearScreen")]
+        public void ClearScreen()
         {
-            BeginState();
+            SDL.RenderClear(App.Renderer);
+        }
 
-            module["ClearScreen"] = new LuaFunction((context, ct) =>
-            {
-                SDL.RenderClear(Renderer);
+        [LuaMember("SetAlpha")]
+        public void SetAlpha(float alpha)
+        {
+            var state = GetState();
 
-                return new(0);
-            });
+            state.Alpha = alpha;
 
-            module["BeginState"] = new LuaFunction((context, ct) =>
-            {
-                BeginState();
+            SDL.SetRenderDrawColorFloat(App.Renderer, state.R, state.G, state.B, alpha);
+        }
 
-                return new(0);
-            });
+        [LuaMember("SetColor")]
+        public void SetColor(Color color)
+        {
+            float r, g, b;
+            var state = GetState();
 
-            module["EndState"] = new LuaFunction((context, ct) =>
-            {
-                EndState();
+            r = color.R;
+            g = color.G;
+            b = color.B;
 
-                return new(0);
-            });
+            SDL.SetRenderDrawColorFloat(App.Renderer, r, g, b, state.Alpha);
 
-            module["SetAlpha"] = new LuaFunction((context, ct) =>
-            {
-                float alpha = context.GetArgument<float>(0);
-                var state = GetState();
+            state.R = r;
+            state.G = g;
+            state.B = b;
+        }
 
-                state.Alpha = alpha;
-
-                SDL.SetRenderDrawColorFloat(Renderer, state.R, state.G, state.B, alpha);
-
-                return new(0);
-            });
-
-            module["SetColor"] = new LuaFunction((context, ct) =>
-            {
-                float r, g, b;
-                var state = GetState();
-                BuwanColor color = context.GetArgument<BuwanColor>(0);
-
-                r = color.R;
-                g = color.G;
-                b = color.B;
-
-                SDL.SetRenderDrawColorFloat(Renderer, r, g, b, state.Alpha);
-
-                state.R = r;
-                state.G = g;
-                state.B = b;
-
-                return new(0);
-            });
-
-            module["DrawRectangle"] = new LuaFunction((context, ct) =>
-            {
-                var rectangle = context.GetArgument<BuwanRectangle>(0);
-
-                SDL.RenderFillRect(Renderer, rectangle.Rect);
-
-                return new(0);
-            });
-        } 
+        [LuaMember("DrawRectangle")]
+        public void DrawRectangle(Rectangle rectangle)
+        {
+            SDL.RenderFillRect(App.Renderer, rectangle.Rect);
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Buwan.Models;
-using Buwan.Modules.Objects;
+﻿using Buwan.Modules.Objects;
 using Lua;
 using System;
 using System.Collections.Generic;
@@ -7,19 +6,22 @@ using System.Text;
 
 namespace Buwan.Modules
 {
-    internal class ColorsModule : BuwanModule
+    [LuaObject]
+    internal partial class ColorsModule 
     {
-        public ColorsModule()
-            : base("Colors")
-        {}
+        [LuaMember("Black")]
+        public static readonly Color Black = new(0, 0, 0);
 
-        public override void OnCreate(LuaTable module)
-        {
-            module["Black"] = new BuwanColor(0, 0, 0);
-            module["White"] = new BuwanColor(1, 1, 1);
-            module["Red"] = new BuwanColor(1, 0, 0);
-            module["Green"] = new BuwanColor(0, 1, 0);
-            module["Blue"] = new BuwanColor(0, 0, 1);
-        }
+        [LuaMember("White")]
+        public static readonly Color White = new(1, 1, 1);
+
+        [LuaMember("Red")]
+        public static readonly Color Red = new(1, 0, 0);
+
+        [LuaMember("Green")]
+        public static readonly Color Green = new(0, 1, 0);
+
+        [LuaMember("Blue")]
+        public static readonly Color Blue = new(0, 0, 1);
     }
 }
