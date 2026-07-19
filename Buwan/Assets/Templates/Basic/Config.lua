@@ -2,7 +2,7 @@
 
 -- Get the default app configuration 
 ---@return table The default app configuration table
-function App.GetConfig()
+function App:GetConfig()
 	return {
 		-- App metadata --
 		Name = "Basic", -- The name of the app 

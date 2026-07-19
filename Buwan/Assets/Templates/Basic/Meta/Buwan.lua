@@ -4,7 +4,7 @@
 App = {}
 
 -- Exit the application
-function App.Exit() end
+function App:Exit() end
 
 ---@class Color
 ---@field R number
@@ -76,27 +76,27 @@ function Vector2.new(x, y) end
 Graphics = {}
 
 -- Clear the screen with the current drawing color
-function Graphics.ClearScreen() end
+function Graphics:ClearScreen() end
 
 -- Begin properties state for drawing
 --
 -- These properties include rotation, color, alpha, etc
-function Graphics.BeginState() end
+function Graphics:BeginState() end
 
 -- End properties state for drawing 
 --
--- Must match with another Graphics.BeginState() 
-function Graphics.EndState() end
+-- Must match with another Graphics:BeginState() 
+function Graphics:EndState() end
 
 -- Set the current alpha 
 ---@note If you want everything to be transparent, set alpha to 0.0
 ---@param alpha number The alpha value ranging from 0.0 to 1.0
-function Graphics.SetAlpha(alpha) end
+function Graphics:SetAlpha(alpha) end
 
 -- Set the current color  
 ---@param color Color The color to use 
-function Graphics.SetColor(color) end
+function Graphics:SetColor(color) end
 
 -- Draw a rectangle 
 ---@param rectangle Rectangle The rectangle to use 
-function Graphics.DrawRectangle(rectangle) end
+function Graphics:DrawRectangle(rectangle) end
