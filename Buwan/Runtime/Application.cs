@@ -117,7 +117,10 @@ namespace Buwan.Runtime
 
             await InitWindowAsync();
 
-            await Lua.CallAsync(_appModule.OnReadyFunc, [_appModule]);
+            if (_appModule.OnReadyFunc.Type == LuaValueType.Function)
+            {
+                await Lua.CallAsync(_appModule.OnReadyFunc, [_appModule]);
+            }
 
             ulong previousPerformanceCount = SDL.GetPerformanceCounter();
 
