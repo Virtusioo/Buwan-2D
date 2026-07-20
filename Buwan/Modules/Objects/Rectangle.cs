@@ -58,17 +58,17 @@ namespace Buwan.Modules.Objects
         [LuaMember("CollidesWithRectangle")]
         public bool CollidesWithRectangle(Rectangle rectangle)
         {
-            return (X + Width >= rectangle.X &&
-                   X <= rectangle.X + rectangle.Width) ||
-                   (Y >= rectangle.Y &&
-                   Y + Height <= rectangle.Y + rectangle.Height);
+            return X < rectangle.X + rectangle.Width &&
+                   X + Width > rectangle.X &&
+                   Y < rectangle.Y + rectangle.Height &&
+                   Y + Height > rectangle.Y;
         }
 
         [LuaMember("CollidesWithPoint")]
         public bool CollidesWithPoint(Vector2 point)
         {
-            return (X >= point.X && X <= point.X) ||
-                   (Y >= point.Y && Y <= point.Y);
+            return X >= point.X && X <= point.X &&
+                   Y >= point.Y && Y <= point.Y;
         }
     }
 }
