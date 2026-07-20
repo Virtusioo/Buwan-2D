@@ -4,6 +4,7 @@ using Lua;
 using SDL3;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Text;
 
 namespace Buwan.Modules
@@ -17,6 +18,9 @@ namespace Buwan.Modules
             public float R = 0;
             public float G = 0;
             public float B = 0;
+            public float ScaleX = 1;
+            public float ScaleY = 1;
+            public float ScaleColor = 1;
         }
 
         public Application App { get; private set; }
@@ -51,6 +55,9 @@ namespace Buwan.Modules
                                         props.G, 
                                         props.B, 
                                         props.Alpha);
+
+            SDL.SetRenderScale(App.Renderer, props.ScaleX, props.ScaleY);
+            SDL.SetRenderColorScale(App.Renderer, props.ScaleColor);
         }
 
         [LuaMember("ClearScreen")]
@@ -90,6 +97,75 @@ namespace Buwan.Modules
         public void DrawRectangle(Rectangle rectangle)
         {
             SDL.RenderFillRect(App.Renderer, rectangle.Rect);
+        }
+
+        [LuaMember("DrawLine")]
+        public void DrawLine(Vector2 startPoint, Vector2 endPoint)
+        {
+            SDL.RenderLine(App.Renderer, startPoint.X, startPoint.Y, endPoint.X, endPoint.Y);
+        }
+
+        [LuaMember("DrawLines")]
+        public void DrawLines(LuaTable linesTable)
+        {
+            // TODO: Make this more efficient? (no allocations)
+
+            var linesArray = linesTable.ToArray();
+            SDL.FPoint[] points = new SDL.FPoint[linesArray.Length];
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                points[i] = linesArray[i].Value.Read<Vector2>();
+            }
+
+            SDL.RenderLines(App.Renderer, points, points.Length);
+        }
+
+        [LuaMember("DrawPoint")]
+        public void DrawPoint(Vector2 point)
+        {
+            SDL.RenderPoint(App.Renderer, point.X, point.Y);
+        }
+
+        [LuaMember("DrawDebugText")]
+        public void DrawDebugText(string text, Vector2 position)
+        {
+            SDL.RenderDebugText(App.Renderer, position.X, position.Y, text);
+        }
+
+        [LuaMember("SetScale")]
+        public void SetScale(Vector2 scaleFactor)
+        {
+            var state = GetState();
+
+            SDL.SetRenderScale(App.Renderer, scaleFactor.X, scaleFactor.Y);
+
+            state.ScaleX = scaleFactor.X;
+            state.ScaleY = scaleFactor.Y;
+        }
+
+        [LuaMember("SetColorScale")]
+        public void SetColorScale(float scaleFactor)
+        {
+            var state = GetState();
+
+            SDL.SetRenderColorScale(App.Renderer, scaleFactor);
+
+            state.ScaleColor = scaleFactor;
+        }
+
+        [LuaMember("SetVSyncEnabled")]
+        public void SetVSyncEnabled(bool enabled)
+        {
+            SDL.SetRenderVSync(App.Renderer, enabled ? 1 : SDL.RendererVSyncDisabled);
+        }
+
+        [LuaMember("GetVSyncEnabled")]
+        public bool GetVSyncEnabled()
+        {
+            SDL.GetRenderVSync(App.Renderer, out int vsyncMode);
+
+            return vsyncMode != SDL.RendererVSyncDisabled;
         }
     }
 }
