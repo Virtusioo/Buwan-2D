@@ -29,5 +29,11 @@ namespace Buwan.Modules
         {
             App.WindowShouldClose = true;
         }
+
+        [LuaMember("GetFPS")]
+        public float GetFPS()
+        {
+            return 1 / App.DeltaTime;
+        }
     }
 }
