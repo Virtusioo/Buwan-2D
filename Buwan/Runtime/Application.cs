@@ -19,6 +19,7 @@ namespace Buwan.Runtime
         public nint Window { get; private set; }
         public string ProjectPath { get; private set; }
         public bool WindowShouldClose = false;
+        public float DeltaTime { get; private set; } = 0;
         private readonly AppModule _appModule;
 
         public Application(string projectPath)
@@ -98,7 +99,6 @@ namespace Buwan.Runtime
             }
 
             SDL.ShowWindow(Window);
-            SDL.SetRenderVSync(Renderer, 1);
             SDL.SetRenderLogicalPresentation(Renderer, 
                                              windowWidth, 
                                              windowHeight, 
@@ -127,7 +127,7 @@ namespace Buwan.Runtime
             while (!WindowShouldClose)
             {
                 ulong currentPerformanceCount = SDL.GetPerformanceCounter();
-                float deltaTime = (float)(currentPerformanceCount - previousPerformanceCount) / SDL.GetPerformanceFrequency();
+                DeltaTime = (float)(currentPerformanceCount - previousPerformanceCount) / SDL.GetPerformanceFrequency();
 
                 previousPerformanceCount = currentPerformanceCount;
 
@@ -141,7 +141,7 @@ namespace Buwan.Runtime
                     }
                 }
 
-                await Lua.CallAsync(_appModule.OnUpdateFunc, [_appModule, deltaTime]);
+                await Lua.CallAsync(_appModule.OnUpdateFunc, [_appModule, DeltaTime]);
                 await Lua.CallAsync(_appModule.OnDrawFunc, [_appModule]);
 
                 SDL.RenderPresent(Renderer);
